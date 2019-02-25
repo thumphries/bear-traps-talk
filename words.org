@@ -1,0 +1,56 @@
+* Haskell's bear traps
+
+** base
+
+Partial functions and surprises in base
+
+fromIntegral
+
+Strictness
+
+WriterT
+
+lazy vs strict builders
+
+quickcheck instances
+
+exceptions and operability
+
+** Surprise / second order bugs
+
+** False idioms
+
+Fun things to do that are rarely appropriate
+
+Make invalid states unrepresentable - calm down fella
+
+Recursion schemes vs simpler representations
+
+free monads
+
+deriving public APIs, serializations
+
+servant sort of stuff
+
+** Navigating culture and history
+
+Dialects
+
+Effect systems
+
+Build systems
+
+Preludes
+
+Strings
+
+Parsers
+
+Pretty-printers
+
+** Conclusion
+
+Use in an organisation needs to be relatively controlled and
+intentional, can become a shitshow
+
+Lots of functions that do surprising things, bad defaults, etc
