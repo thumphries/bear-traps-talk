@@ -24,6 +24,12 @@ Can obviously find these all over the Prelude and base
 
 *** text encoding
 
+*** Monad Fail
+
+Which monad is this? (parsec etc)
+
+Visually very hard to tell if this fails in-band or out of band
+
 ** Wrong answer
 
 *** fromIntegral
@@ -75,6 +81,9 @@ via generics, SYB, etc
 
 Extremely polymorphic and often over
 
+*** Failed refactoring
+
+Not brittle enough
 
 ** Bad defaults
 
@@ -83,6 +92,12 @@ Extremely polymorphic and often over
 Typeclass obscures the actual detail of what you're generating
 
 Int range -100 to +100
+
+*** Data.Default
+
+No meaningful guarantees about the value produced
+
+Basically always look at the source and check it
 
 ** My process died
 
@@ -158,7 +173,7 @@ Never freed, as mentioned above
 
 **** Test frameworks
 
-* Other section
+* Initial notes
 ** base
 
 Partial functions and surprises in base
