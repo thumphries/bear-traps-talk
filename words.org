@@ -1,5 +1,164 @@
 * Haskell's bear traps
 
+Just a few of them
+
+** Failure
+
+*** undefined
+
+The worst TODO in the world.
+
+Solution: Typed holes (GHC XXX)
+
+*** error
+
+*** record accessors
+
+*** read
+
+readMaybe (since GHC XXX)
+
+*** head / tail
+
+Can obviously find these all over the Prelude and base
+
+*** text encoding
+
+** Wrong answer
+
+*** fromIntegral
+
+*** filter
+
+filter in, filter out
+
+isPredicate trick
+
+alias
+
+
+
+*** void
+
+"throw it away" "throw what away?"
+
+
+
+*** Data.Map.<>
+
+Duplicate values are silently clobbered
+
+Biased union
+
+
+
+*** Lazy IO
+
+Hard to reason about
+
+https://stackoverflow.com/a/13129263
+
+*** ResourceT
+
+Just make it compile
+
+Surprise! Some finalizers ran.
+
+ResourceT often leaks out of libraries in the name of "control"
+users don't quite know what they are running, throw in runResourceT
+to make things compile
+
+
+*** Generic programming
+
+via generics, SYB, etc
+
+Extremely polymorphic and often over
+
+
+** Bad defaults
+
+*** QuickCheck
+
+Typeclass obscures the actual detail of what you're generating
+
+Int range -100 to +100
+
+** My process died
+
+"It worked on my laptop"
+
+*** Strict evaluation
+
+*** Strict data
+
+Types in `base` are not strict, so you are doomed to mix and match.
+
+*** WriterT space leak
+
+*** Unbounded queues
+
+It works on my laptop
+
+*** MVar liveness
+
+*** RTS
+
+**** Threaded, rtsopts
+
+`-threaded -rtsopts`
+
+Not on by default
+
+
+
+**** C heap vs GHC heap
+
+GHC's block allocator: linked list of megablocks, divided into blocks
+
+Megablocks are fetched via malloc
+
+Megablocks are never freed back to the OS
+
+i.e. C allocations and GHC allocations compete for resources
+
+
+**** Garbage collector behaviour
+
+Grows by default
+
+Multiple generations, when they fill they double in size
+
+Never freed, as mentioned above
+
+
+** Operability fails
+
+*** Show
+
+*** Network errors
+
+*** The impossible happened
+
+** Culture / ecosystem
+
+*** Deriving serialisation
+
+*** Navigating the ecosystem
+
+**** Preludes
+
+**** String representations
+
+**** Postgres libraries
+
+**** Streaming libraries
+
+**** Web frameworks
+
+**** Test frameworks
+
+* Other section
 ** base
 
 Partial functions and surprises in base
