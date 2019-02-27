@@ -150,10 +150,10 @@ Never freed, as mentioned above
 ** Operability fails
 
 *** Show
-
 *** Network errors
 
 *** The impossible happened
+
 
 ** Culture / ecosystem
 

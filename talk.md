@@ -24,23 +24,16 @@ class: center, middle
 
 # Part 1: Failure
 
+???
+
+I'd like to start by talking a bit about the building blocks of
+failure.
+
+Failure you can see.
 
 ---
 
 # `undefined`
-
-???
-
-Let's start with the bottom.
-
-Haskell expressions don't always successfully evaluate.
-There are two mechanisms for runtime errors: functions are
-either **partial** or they **throw exceptions**.
-
-`undefined` is the simplest partial function. It always typechecks,
-and blows up whenever it is evaluated.
-
---
 
 a.k.a. *bottom*, the root of all runtime errors
 
@@ -54,6 +47,17 @@ undefined :: forall a. a
 λ> length undefined
 *** Exception: Prelude.undefined
 ```
+
+???
+
+Let's start with the bottom.
+
+Haskell expressions don't always successfully evaluate.
+There are two mechanisms for runtime errors: functions are
+either **partial** or they **throw exceptions**.
+
+`undefined` is the simplest partial function. It always typechecks,
+and blows up whenever it is evaluated.
 
 ---
 
@@ -146,7 +150,7 @@ myMaximum =
 
 # `head`, `tail`, etc
 
-### Solution 1: Constructive inputs
+### Solution 1: Restrict input
 
 ```haskell
 myMaximum :: NonEmpty Int -> Int
@@ -160,7 +164,7 @@ myMaximum =
 
 # `head`, `tail`, etc
 
-### Solution 2: Caller deals
+### Solution 2: Loosen output
 
 ```haskell
 myMaximum :: [Int] -> Maybe Int
@@ -176,6 +180,10 @@ myMaximum xs =
 
 Usually I like to use Solution 1 whenever it's easy to do so.
 If it takes more than 25 minutes to be constructive, give up.
+
+There's *so many* of these in base.
+
+I'm not going to go into them in detail.
 
 ---
 
@@ -298,23 +306,23 @@ Which instance are you using?
 import Data.Attoparsec.ByteString
 
 bool :: Parser Bool
-bool =
-  true <|> false
-
-true :: Parser Bool
-true = do
-  "true" <- takeWhile isAlpha
-  pure True
-
-false :: Parser Bool
-false = do
-  "false" <- takeWhile isAlpha
-  pure False
+bool = do
+  str <- takeWhile isAlpha
+  case str of
+    "true" ->
+	  pure True
+    "false" ->
+      pure False
+    _ ->
+      fail "Invalid boolean"
 ```
 
 ???
 
-MonadFail means 
+MonadFail affects falsifiable patterns inside do-notation,
+as well as explicit `fail` calls.
+
+
 
 ---
 
@@ -345,6 +353,13 @@ fromIntegral :: (Num b, Integral a) => a -> b
 --
 
 ```haskell
+λ> (fromIntegral :: Int32 -> Int64) 41
+41
+```
+
+--
+
+```haskell
 λ> (fromIntegral :: Int64 -> Int32) maxBound
 -1
 λ> (fromIntegral :: Int64 -> Int32) maxBound
@@ -355,9 +370,9 @@ fromIntegral :: (Num b, Integral a) => a -> b
 
 fromIntegral is dangerous because it looks innocuous!
 
-We have to use it all the time
+We have to use it all the time - it's the "default coercion"
 
-but when going from a "larger" type to a "smaller" type,
+... but when going from a "larger" type to a "smaller" type,
 it silently corrupts, which is rarely what we want.
 
 
@@ -432,22 +447,6 @@ Solution 2: Use more explicit techniques
 
 Streaming or block-at-a-time
 
-
----
-
-# ResourceT
-
-Know what's being managed
-
-???
-
-Amazonka is a good example - the ResourceT is exposed, in case you
-want to manage your HTTP connections alongside some other ResourceT in
-your application.
-
-Same problem as lazy IO, handles escape their context
-
-
 ---
 
 # Generic programming
@@ -464,6 +463,55 @@ errors in your code.
 
 Since it feels like a very advanced technique, people tend to test
 these things a bit less, for whatever reason.
+
+---
+
+# Code too stable
+
+It still compiles
+
+--
+
+```haskell
+data MyRecord = MyRecord {
+    firstField :: Stuff
+  , secondField :: Things
+  , thirdField :: New
+  }
+
+thing :: MyRecord -> IO ()
+thing MyRecord{..} =
+  process firstField
+  process secondField
+```
+
+---
+
+# Code too brittle
+
+Broke everybody
+
+--
+
+```haskell
+data Extensible =
+    A
+  | B
+  | C
+
+isA :: Extensible -> Bool
+isA ext =
+  case ext of
+    A -> True
+	B -> False
+	C -> False
+```
+
+???
+
+Much worse for libraries that are consumed in a variety of projects.
+
+Usually not too painful in an application.
 
 ---
 
