@@ -13,11 +13,6 @@ Formation
 
 Hi all, name is Tim, work at Formation right now, etc.
 
-I've been writing Haskell for work my whole career.
-
-This is a talk about the reams and reams of nonsense I have
-absorbed that make it feasible to use Haskell for real things.
-
 ---
 
 class: center, middle
@@ -48,6 +43,16 @@ undefined :: forall a. a
 *** Exception: Prelude.undefined
 ```
 
+--
+
+```haskell
+important :: Thing -> ValidatedThing
+important =
+  undefined -- TODO implement
+```
+
+World's worst task management system
+
 ???
 
 Let's start with the bottom.
@@ -59,9 +64,33 @@ either **partial** or they **throw exceptions**.
 `undefined` is the simplest partial function. It always typechecks,
 and blows up whenever it is evaluated.
 
+
 ---
 
 # `error`
+
+How thoughtful
+
+```haskell
+error :: forall a. String -> a
+```
+
+--
+
+```sh
+λ> length (error "unimplemented")
+*** Exception: unimplemented
+```
+
+--
+
+```haskell
+important :: Thing -> ValidatedThing
+important =
+  error "TODO implement important"
+```
+
+(At least we can grep for it - but who called it?!)
 
 ???
 
@@ -120,6 +149,8 @@ The fun really starts when
 
 ---
 
+---
+
 # `head`, `tail`, etc
 
 Partial functions that are always avoidable
@@ -145,6 +176,10 @@ myMaximum =
 λ> myMaximum []
 *** Exception: Prelude.head: empty list
 ```
+
+???
+
+`base` contains _lots_ of partial functions.
 
 ---
 
@@ -483,6 +518,10 @@ newtype Workers = Workers Int
 "Workers 5 workers"
 ```
 
+--
+
+Worst example: Read / Show in optparse-applicative (`auto`)
+
 ???
 
 So, months later, we decide to add some nice newtypes to improve our
@@ -492,6 +531,7 @@ We change the outer call sites, then follow the errors until the
 compiler stops complaining.
 
 Problem: too much stuff keeps compiling.
+
 
 ---
 
