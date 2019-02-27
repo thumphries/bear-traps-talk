@@ -13,6 +13,23 @@ Formation
 
 Hi all, name is Tim, work at Formation right now, etc.
 
+This is a talk about all the things I pay attention to when reviewing
+Haskell code.
+
+Sorry it's so half-baked!
+
+---
+
+class: center, middle
+
+# Too much stuff
+
+???
+
+The general theme of this talk is "there's too much".
+
+How can we cut down on it?
+
 ---
 
 class: center, middle
@@ -1004,7 +1021,9 @@ class: center, middle
 
 # Part X: Coping Strategies
 
----
+--
+
+Understanding
 
 ???
 
@@ -1013,11 +1032,55 @@ Understand - Haskell is very old
 Many stakeholders with many different use cases
 
 Styles over time have changed a lot -
-we've gone from mimicking OO to being mimicked in many cases
+
+functional styles have gone from mimicking OO to being mimicked in
+many cases
+
+--
+
+Standardise
+
+???
 
 At a certain organisational scale, it is worth investing in a common core
 
-We can't expect new people coming onto our team to navigate this stuff
-seamlessly. It's easy to onboard one person, it's really really hard
-to onboard your hundredth person. And you can't expect the people you
-hire to know your dialect.
+As a team, try to cut down on decision fatigue.
+
+Make choices and recommendations.
+
+Make sure juniors don't have to learn too much, if you're going to
+hire lots of them.
+
+If you're not, maybe you want to go wild with advanced profunctor optics.
+
+--
+
+Contribute upstream
+
+???
+
+If you're using an interesting combination of base libraries,
+you will have to write new things to make it all work.
+
+Share them.
+
+--
+
+Talk about it
+
+???
+
+When I was learning Haskell I thought I'd have to know how to use
+GADTs, like they were a daily thing.
+
+The Haskell I write right now could easily be Go or Ocaml or Rust.
+
+The teams I've been on have kept things simple.
+
+It's useful for people to hear about this stuff.
+
+---
+
+# Fin
+
+Sorry!
