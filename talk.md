@@ -64,7 +64,6 @@ either **partial** or they **throw exceptions**.
 `undefined` is the simplest partial function. It always typechecks,
 and blows up whenever it is evaluated.
 
-
 ---
 
 # `error`
@@ -100,6 +99,23 @@ be mostly useless!
 error lets us attach a string, but otherwise just typechecks wherever
 you put it and blows your program up at runtime.
 
+---
+
+# Partial function JIRA
+
+### Alternative 1: Typed holes
+
+```haskell
+important :: Thing -> ValidatedThing
+important =
+  _important
+```
+
+`-fdefer-type-errors` for seamless development
+
+???
+
+Forces you to go back and fix it
 
 ---
 
@@ -122,7 +138,12 @@ read :: Read a => String -> a
 
 ???
 
-The fun really starts when 
+Unfortunately, the partial functions are not just coming from inside
+the house.
+
+They're pretty much everywhere.
+
+Base, Hackage, etc.
 
 ---
 
@@ -131,7 +152,7 @@ The fun really starts when
 ### Solution 1: `readMaybe`
 
 ```haskell
-
+readMaybe :: Read a => String -> Maybe a
 ```
 
 ---
