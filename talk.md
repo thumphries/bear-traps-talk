@@ -530,7 +530,7 @@ fromIntegral :: (Num b, Integral a) => a -> b
 
 Something I look out for in code reviews.
 
-The trouble with `fromIntegral` is people
+`fromIntegral` is the "just make it compile" operator.
 
 --
 
@@ -572,6 +572,24 @@ filter :: (a -> Bool) -> [a] -> [a]
 
 Does it filter in, or filter out?!
 
+inverted filters show up surprisingly often.
+
+---
+
+# `filter`
+
+```haskell
+accept :: (a -> Bool) -> [a] -> [a]
+accept = filter
+
+reject :: (a -> Bool) -> [a] -> [a]
+reject p = filter (not . p)
+```
+
+???
+
+Alternative names for your custom prelude
+
 ---
 
 # `void`
@@ -598,6 +616,65 @@ worker =
 ???
 
 Useful until the `a` changes.
+
+---
+
+# `void`
+
+Whatever you got, I don't want it
+
+```haskell
+void :: Functor f => f a -> f ()
+```
+
+--
+
+```haskell
+main :: IO ()
+main =
+  void worker
+
+worker :: IO (IO ())
+worker =
+  pure (print "nah")
+```
+
+???
+
+Useful until the `a` changes.
+
+Second-order bug: a sequence of innocuous diffs broke your system.
+
+---
+
+---
+
+# `void`
+
+### Alternative 1: Type annotations
+
+```haskell
+main :: IO ()
+main =
+  (_ :: ()) <- void worker 
+```
+
+???
+
+Couple of ways we can avoid this
+
+--
+
+### Alternative 2: Monomorphic shim
+
+```haskell
+main :: IO ()
+main =
+  runWorker worker
+  
+runWorker :: IO () -> IO ()
+runWorker = id
+```
 
 ---
 
