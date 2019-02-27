@@ -36,12 +36,27 @@ a.k.a. *bottom*, the root of all runtime errors
 undefined :: forall a. a
 ```
 
+
+???
+
+Let's start with the bottom.
+
+Haskell expressions don't always successfully evaluate.
+There are two mechanisms for runtime errors: functions are
+either **partial** or they **throw exceptions**.
+
+`undefined` is the simplest partial function. It always typechecks,
+and blows up whenever it is evaluated.
+
+
 --
 
 ```sh
 λ> length undefined
 *** Exception: Prelude.undefined
 ```
+
+???
 
 --
 
@@ -55,14 +70,11 @@ World's worst task management system
 
 ???
 
-Let's start with the bottom.
+Particularly nefarious when you use it to unblock yourself.
 
-Haskell expressions don't always successfully evaluate.
-There are two mechanisms for runtime errors: functions are
-either **partial** or they **throw exceptions**.
+Slot it in as a TODO, your code compiles, you can keep moving.
 
-`undefined` is the simplest partial function. It always typechecks,
-and blows up whenever it is evaluated.
+This code should probably never be merged.
 
 ---
 
@@ -73,6 +85,13 @@ How thoughtful
 ```haskell
 error :: forall a. String -> a
 ```
+
+???
+
+Basically the same thing, but it takes a message.
+
+You get unstuck, the user gets slightly more information, everyone is
+happy.
 
 --
 
@@ -99,6 +118,11 @@ be mostly useless!
 error lets us attach a string, but otherwise just typechecks wherever
 you put it and blows your program up at runtime.
 
+You don't really know which part of your program called it.
+
+The teams I've been on have been dogmatic about **keeping partial
+functions out of production code.**
+
 ---
 
 # Partial function JIRA
@@ -115,13 +139,31 @@ important =
 
 ???
 
-Forces you to go back and fix it
+If you do happen to be using partial functions as a task tracker,
+there are a few quick remedies.
+
+Typed holes achieve a similar thing, but create a warning instead.
+
+Makes it a bit easier to go back and fix it, and you can keep them out of production by enforcing Wall in CI.
 
 ---
 
 # `read`
 
 Parse or die
+
+???
+
+These are pretty obvious when they're visible.
+
+The scary thing about partial functions is they are typically
+hidden several layers deep.
+
+You don't know where they'll be called from.
+
+The only thing you can guarantee is the errors will be _garbage_.
+
+The classic example is `read`.
 
 --
 
@@ -168,6 +210,19 @@ readMaybe :: Read a => String -> Maybe a
 
 ... plus probably many, many others
 
+???
+
+The more robust solution is to write a real parser that you control
+fully.
+
+Unfortunately, there are about 10 ways to do this.
+
+Lots of flexibility, but
+
+The obvious choice is not particularly wise
+
+The superior options have a lot of conceptual overhead
+
 ---
 
 # `head`, `tail`, etc
@@ -178,6 +233,12 @@ Partial functions that are always avoidable
 head :: [a] -> a
 tail :: [a] -> [a]
 ```
+
+???
+
+Let's talk a bit about avoiding partial functions.
+
+We can break this down a couple of ways.
 
 --
 
@@ -249,6 +310,16 @@ Is that trusted input?
 decodeUtf8 :: ByteString -> Text
 decodeUtf8' :: ByteString -> Either UnicodeException Text
 ```
+
+???
+
+Spotting dangerous functions is a real art.
+
+This one comes up really often.
+
+It's a function in the Text package for decoding raw UTF-8.
+
+If you don't trust the input, it'll fail.
 
 --
 
@@ -441,6 +512,9 @@ class: center, middle
 
 So thus far this has been about program crashes waiting to happen.
 
+This section is about stuff that compiles, runs, and does the wrong
+thing.
+
 
 ---
 
@@ -451,6 +525,12 @@ Basically `auto_cast` for Haskell integrals
 ```haskell
 fromIntegral :: (Num b, Integral a) => a -> b
 ```
+
+???
+
+Something I look out for in code reviews.
+
+The trouble with `fromIntegral` is people
 
 --
 
@@ -731,6 +811,8 @@ It worked on my laptop
 - Too many / not enough capabilities
 - Suboptimal garbage collector settings
 
+Mostly normal software noise
+
 ---
 
 # Strictness
@@ -741,12 +823,30 @@ Not particularly easy
 
 - Thunks accumulate on the _outside_ of your data
     - Learn when to use `$!` and bang patterns and `seq`
+
+--
 - Thunks accumulate on the _inside_ of your data
     - e.g. Unread fields in a record
 	- e.g. Incrementing `Maybe Int` without forcing it
 	- `-XStrictData` or `!` on fields
+
+--
 - Libraries (and `base`) tend not to export strict data
     - Enjoy interop between your strict Maybe and everyone else's
+
+---
+
+# WriterT
+
+Banned at most companies
+
+???
+
+WriterT leaks space always
+
+Reimplement it in terms of StateT
+
+How do we all know this? Blog posts and reddit
 
 ---
 
@@ -759,6 +859,12 @@ It printed a bunch of trash
 - Terrible error messages from most of the ecosystem
 - `Show` is bad for operators
 - `error "impossible" -- not possible`
+    - The impossible usually happens
+
+--
+
+Mitigations: careful explicit error handling, exit codes, design
+failure messages for humans
 
 ---
 
@@ -784,7 +890,7 @@ class: center, middle
 
 class: center, middle
 
-# Part X: Strategies
+# Part X: Coping Strategies
 
 ---
 
