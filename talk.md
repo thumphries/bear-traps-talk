@@ -170,8 +170,6 @@ readMaybe :: Read a => String -> Maybe a
 
 ---
 
----
-
 # `head`, `tail`, etc
 
 Partial functions that are always avoidable
@@ -240,6 +238,34 @@ If it takes more than 25 minutes to be constructive, give up.
 There's *so many* of these in base.
 
 I'm not going to go into them in detail.
+
+---
+
+# Text encoding
+
+Is that trusted input?
+
+```haskell
+decodeUtf8 :: ByteString -> Text
+decodeUtf8' :: ByteString -> Either UnicodeException Text
+```
+
+--
+
+```sh
+λ> decodeUtf8 untrustedInput
+*** Exception: Cannot decode input
+```
+
+???
+
+Just to illustrate that it's not just `base`, here's one I hit every
+day.
+
+There's a real problem if we're going to be building reliable systems.
+
+Libraries are able to throw these context-free errors.
+the output is not necessarily actionable.
 
 ---
 
@@ -553,6 +579,20 @@ compiler stops complaining.
 
 Problem: too much stuff keeps compiling.
 
+---
+
+# Show
+
+A free, meaningless serialisation
+
+### Alternative: Monomorphic functions
+
+```haskell
+renderInt :: Int -> String
+renderInt = printf "%d"
+```
+
+(... or just keep Show out of databases, parsers, APIs)
 
 ---
 
@@ -587,7 +627,15 @@ echo "foo" > tmp
 
 Solution 1: Know what is going on
 
-insert properly CPS'd thing here
+```haskell
+import System.IO
+
+cat :: FilePath -> IO ()
+cat file =
+  withFile file ReadMode $ \handle -> do
+    stuff <- hGetContents handle
+	hPutStr stdout stuff
+```
 
 ---
 
@@ -682,6 +730,23 @@ It worked on my laptop
 - Deadlock
 - Too many / not enough capabilities
 - Suboptimal garbage collector settings
+
+---
+
+# Strictness
+
+Not particularly easy
+
+--
+
+- Thunks accumulate on the _outside_ of your data
+    - Learn when to use `$!` and bang patterns and `seq`
+- Thunks accumulate on the _inside_ of your data
+    - e.g. Unread fields in a record
+	- e.g. Incrementing `Maybe Int` without forcing it
+	- `-XStrictData` or `!` on fields
+- Libraries (and `base`) tend not to export strict data
+    - Enjoy interop between your strict Maybe and everyone else's
 
 ---
 
