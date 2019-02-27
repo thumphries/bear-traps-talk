@@ -76,6 +76,9 @@ Slot it in as a TODO, your code compiles, you can keep moving.
 
 This code should probably never be merged.
 
+It can be merged (no errors) and can make it all the way to
+production. Can disrupt production systems.
+
 ---
 
 # `error`
@@ -111,14 +114,11 @@ important =
 (At least we can grep for it - but who called it?!)
 
 ???
-
-Partial functions don't have to be completely useless; they can also
-be mostly useless!
-
-error lets us attach a string, but otherwise just typechecks wherever
-you put it and blows your program up at runtime.
-
 You don't really know which part of your program called it.
+CallStack can help a bit, but not much.
+
+This has all the problems that undefined has - can make it into
+production.
 
 The teams I've been on have been dogmatic about **keeping partial
 functions out of production code.**
@@ -227,7 +227,7 @@ The superior options have a lot of conceptual overhead
 
 # `head`, `tail`, etc
 
-Partial functions that are always avoidable
+Partial functions that are always avoidable in practice
 
 ```haskell
 head :: [a] -> a
@@ -627,8 +627,6 @@ Whatever you got, I don't want it
 void :: Functor f => f a -> f ()
 ```
 
---
-
 ```haskell
 main :: IO ()
 main =
@@ -639,13 +637,13 @@ worker =
   pure (print "nah")
 ```
 
+**Second-order bug**: two correct changes broke the system
+
 ???
 
 Useful until the `a` changes.
 
 Second-order bug: a sequence of innocuous diffs broke your system.
-
----
 
 ---
 
@@ -688,7 +686,7 @@ renderWorkers workers =
   show workers <> " workers"
 ```
 
-```
+```sh
 λ> renderWorkers 5
 "5 workers"
 ```
@@ -717,7 +715,7 @@ newtype Workers = Workers Int
 
 --
 
-```
+```sh
 λ> renderWorkers (Workers 5)
 "Workers 5 workers"
 ```
@@ -896,18 +894,26 @@ Mostly normal software noise
 
 Not particularly easy
 
---
-
 - Thunks accumulate on the _outside_ of your data
     - Learn when to use `$!` and bang patterns and `seq`
 
---
+---
+
+# Strictness
+
+Not particularly easy
+
 - Thunks accumulate on the _inside_ of your data
     - e.g. Unread fields in a record
 	- e.g. Incrementing `Maybe Int` without forcing it
 	- `-XStrictData` or `!` on fields
 
---
+---
+
+# Strictness
+
+Not particularly easy
+
 - Libraries (and `base`) tend not to export strict data
     - Enjoy interop between your strict Maybe and everyone else's
 
@@ -951,17 +957,46 @@ class: center, middle
 
 ---
 
-# Dialects
+# Effect systems
+
+- `transformers`
+- `mtl`
+- `freer`
+- `fused-effects`
+
+... and about 20 other varieties
 
 ---
 
-# One dozen effect systems
+# Streaming
+
+More than 10 libraries
 
 ---
 
 # String types
 
+`[Char], Text, ByteString` in common use
+
+Alternatives in `foundation` and other custom cores
+
 ---
+
+# Mixed idioms
+
+- Deriving serialisation vs explicit
+- Lens vs fclabels vs direct accessors
+
+---
+
+# Dialects
+
+- Exceptions vs value-level errors
+- Choice of effect system etc
+- Policy on partial functions
+- Policy on data strictness
+- Ground types: Text / ByteString or your own thing
+- Alternative compilers (SCB)
 
 ---
 
@@ -973,11 +1008,16 @@ class: center, middle
 
 ???
 
-Dialects and tribes - many use cases
+Understand - Haskell is very old
 
-Layering - explicit libraries with few expectations,
-more libraries built on top
+Many stakeholders with many different use cases
 
-Defaults are for applications
+Styles over time have changed a lot -
+we've gone from mimicking OO to being mimicked in many cases
 
-At a certain scale, it is worth investing in a common core
+At a certain organisational scale, it is worth investing in a common core
+
+We can't expect new people coming onto our team to navigate this stuff
+seamlessly. It's easy to onboard one person, it's really really hard
+to onboard your hundredth person. And you can't expect the people you
+hire to know your dialect.
