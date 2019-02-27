@@ -72,9 +72,110 @@ you put it and blows your program up at runtime.
 
 # `read`
 
+Parse or die
+
+--
+
+```haskell
+read :: Read a => String -> a
+```
+
+--
+
+```haskell
+λ> read "true" :: Bool
+*** Exception: Prelude.read: no parse
+```
+
 ???
 
 The fun really starts when 
+
+---
+
+# `read`
+
+### Solution 1: `readMaybe`
+
+```haskell
+
+```
+
+---
+
+# `read`
+
+### Solution 2: Real parser
+
+- Attoparsec (fast, worse errors)
+- Parsec, Megaparsec (better errors)
+- Alex / Happy (parser generators)
+- Earley (embedded, more flexible than Parsec family)
+
+... plus probably many, many others
+
+---
+
+# `head`, `tail`, etc
+
+Partial functions that are always avoidable
+
+```haskell
+head :: [a] -> a
+tail :: [a] -> [a]
+```
+
+--
+
+```haskell
+myMaximum :: [Int] -> Int
+myMaximum =
+  head . sort
+```
+
+--
+
+```haskell
+λ> myMaximum [1..10]
+10
+λ> myMaximum []
+*** Exception: Prelude.head: empty list
+```
+
+---
+
+# `head`, `tail`, etc
+
+### Solution 1: Constructive inputs
+
+```haskell
+myMaximum :: NonEmpty Int -> Int
+myMaximum =
+  NE.head . NE.sort
+```
+
+???
+
+---
+
+# `head`, `tail`, etc
+
+### Solution 2: Caller deals
+
+```haskell
+myMaximum :: [Int] -> Maybe Int
+myMaximum xs =
+  case sort xs of
+    [] ->
+	  Nothing
+	(y:ys) ->
+	  Just y
+```
+
+???
+
+Usually I like to use Solution 1 whenever it's easy to do so.
+If it takes more than 25 minutes to be constructive, give up.
 
 ---
 
@@ -124,6 +225,106 @@ thatFirst :: Thing -> Text
 λ> thisFirst (That "a" 5)
 *** Exception: No match in record selector thisFirst
 ```
+
+---
+
+# Record accessors
+
+### Solution 1: Don't
+
+Break down into additional datatypes. Low overhead
+
+```haskell
+data Thing =
+    XThis This
+  | XThat That
+
+data This = ...
+
+data That = ...
+```
+
+---
+
+# Record accessors
+
+### Solution 2: Lenses
+
+Generate lenses and prisms. High complexity overhead
+
+---
+
+# `fail`
+
+Which instance are you using?
+
+--
+
+```haskell
+import System.IO
+
+prompt :: IO ()
+prompt = do
+  "yes" <- getLine
+  putStrLn "ok"
+```
+
+--
+
+```haskell
+> prompt
+yes
+ok
+```
+
+--
+
+```haskell
+> prompt
+oij
+*** Exception: user error (Pattern match failure in
+    do expression at File.hs:30:15-19)
+```
+
+---
+
+# `fail`
+
+Which instance are you using?
+
+--
+
+```haskell
+import Data.Attoparsec.ByteString
+
+bool :: Parser Bool
+bool =
+  true <|> false
+
+true :: Parser Bool
+true = do
+  "true" <- takeWhile isAlpha
+  pure True
+
+false :: Parser Bool
+false = do
+  "false" <- takeWhile isAlpha
+  pure False
+```
+
+???
+
+MonadFail means 
+
+---
+
+# `fail`
+
+### Mitigation: verify
+
+You won't often abstract over `MonadFail`
+
+Just check which instance you're using
 
 ---
 
@@ -263,3 +464,22 @@ errors in your code.
 
 Since it feels like a very advanced technique, people tend to test
 these things a bit less, for whatever reason.
+
+---
+
+class: center, middle
+
+# Part X: Strategies
+
+---
+
+???
+
+Dialects and tribes - many use cases
+
+Layering - explicit libraries with few expectations,
+more libraries built on top
+
+Defaults are for applications
+
+At a certain scale, it is worth investing in a common core
