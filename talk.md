@@ -236,9 +236,13 @@ Unfortunately, there are about 10 ways to do this.
 
 Lots of flexibility, but
 
-The obvious choice is not particularly wise
+**this is characteristic** of the Haskell ecosystem.
 
-The superior options have a lot of conceptual overhead
+The obvious choice is not particularly wise in most applications.
+
+The superior options have a lot of conceptual overhead.
+
+We can't be surprised people stick to the easy thing.
 
 ---
 
@@ -1023,7 +1027,7 @@ class: center, middle
 
 --
 
-Understanding
+Understand
 
 ???
 
@@ -1063,6 +1067,17 @@ If you're using an interesting combination of base libraries,
 you will have to write new things to make it all work.
 
 Share them.
+
+--
+
+Audit
+
+???
+
+Always be reading the source and the diffs.
+
+People on Hackage could smuggle partial functions into your code at
+any time.
 
 --
 
