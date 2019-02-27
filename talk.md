@@ -370,6 +370,14 @@ data Thing =
     This { thisFirst :: Text, thisSecond :: Text }
 ```
 
+???
+
+Back to the language itself
+
+This is a record
+
+It has accessors, which are functions
+
 --
 
 ```haskell
@@ -393,6 +401,12 @@ data Thing =
     This { thisFirst :: Text, thisSecond :: Text }
   | That { thatFirst :: Text, thatSecond :: Int }
 ```
+
+???
+
+Extending the record like this is incredibly dangerous!
+
+Our accessor functions have become partial.
 
 --
 
@@ -450,6 +464,22 @@ power of `lens`.
 ---
 
 # `fail`
+
+???
+
+`fail` is a function we can use in most Monads.
+
+It also appears when we desugar do notation.
+
+In IO, it's equivalent to throwing an exception.
+
+But other Monads can implement it however they want.
+
+**We can't tell the difference syntactically!**
+
+Is this going to crash our program, or produce a nice error?
+
+--
 
 Which instance are you using?
 
@@ -1024,6 +1054,10 @@ Alternatives in `foundation` and other custom cores
 class: center, middle
 
 # Part X: Coping Strategies
+
+---
+
+# Coping strategies
 
 --
 
