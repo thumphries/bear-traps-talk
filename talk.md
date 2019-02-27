@@ -13,6 +13,9 @@ Formation
 
 Hi all, name is Tim, work at Formation right now, etc.
 
+I'm a software engineer, I have used Haskell my entire career.
+I'm not really professionally competent in anything else!
+
 This is a talk about all the things I pay attention to when reviewing
 Haskell code.
 
@@ -621,6 +624,19 @@ filter :: (a -> Bool) -> [a] -> [a]
 
 ???
 
+You have to check basically every filter you see, in
+every single PR. I get this wrong all the time.
+
+The function has a really ambiguous name that tricks my brain.
+
+--
+
+```haskell
+filter (\x -> x /= True) [True, False]
+```
+
+???
+
 Does it filter in, or filter out?!
 
 inverted filters show up surprisingly often.
@@ -1083,6 +1099,8 @@ Standardise
 At a certain organisational scale, it is worth investing in a common core
 
 As a team, try to cut down on decision fatigue.
+
+Common vocabulary
 
 Make choices and recommendations.
 
