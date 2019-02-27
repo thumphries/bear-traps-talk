@@ -247,10 +247,16 @@ data Thing =
     XThis This
   | XThat That
 
-data This = ...
+data This = This { ... }
 
-data That = ...
+data That = That { ... }
 ```
+
+???
+
+Low conceptual overhead.
+
+High syntactic overhead, as we need to unbox.
 
 ---
 
@@ -259,6 +265,13 @@ data That = ...
 ### Solution 2: Lenses
 
 Generate lenses and prisms. High complexity overhead
+
+???
+
+High conceptual overhead - user must understand lenses and prisms.
+
+Syntax can be quite concise and you gain access to the expressive
+power of `lens`.
 
 ---
 
@@ -336,9 +349,16 @@ Just check which instance you're using
 
 ---
 
+---
+
 class: center, middle
 
 # Part 2: Wrong Answer
+
+???
+
+So thus far this has been about program crashes waiting to happen.
+
 
 ---
 
@@ -400,9 +420,78 @@ Whatever you got, I don't want it
 void :: Functor f => f a -> f ()
 ```
 
+--
+
+```haskell
+main :: IO ()
+main =
+  void worker
+
+worker :: IO ()
+worker =
+  forever $ do
+    ... things
+```
+
 ???
 
 Useful until the `a` changes.
+
+---
+
+# Show
+
+A free, meaningless serialisation
+
+```haskell
+renderWorkers :: Int -> String
+renderWorkers workers =
+  show workers <> " workers"
+```
+
+```
+λ> renderWorkers 5
+"5 workers"
+```
+
+???
+
+Show is the typeclass we get for free, on everything.
+
+It's a fairly convenient facility for debugging. But, we often don't
+want the polymorphism!
+
+---
+
+# Show
+
+A free, meaningless serialisation
+
+```haskell
+renderWorkers :: Workers -> String
+renderWorkers workers =
+  show workers <> " workers"
+
+newtype Workers = Workers Int
+  deriving (Show)  
+```
+
+--
+
+```
+λ> renderWorkers (Workers 5)
+"Workers 5 workers"
+```
+
+???
+
+So, months later, we decide to add some nice newtypes to improve our
+code.
+
+We change the outer call sites, then follow the errors until the
+compiler stops complaining.
+
+Problem: too much stuff keeps compiling.
 
 ---
 
@@ -512,6 +601,58 @@ isA ext =
 Much worse for libraries that are consumed in a variety of projects.
 
 Usually not too painful in an application.
+
+---
+
+class: center, middle
+
+# Part 3: Operational hell
+
+---
+
+# My process died
+
+It worked on my laptop
+
+--
+
+- Space leaks
+- Unbounded memory use
+- Deadlock
+- Too many / not enough capabilities
+- Suboptimal garbage collector settings
+
+---
+
+# Your process died
+
+It printed a bunch of trash
+
+--
+
+- Terrible error messages from most of the ecosystem
+- `Show` is bad for operators
+- `error "impossible" -- not possible`
+
+---
+
+class: center, middle
+
+# Part 4: Navigating culture
+
+---
+
+# Dialects
+
+---
+
+# One dozen effect systems
+
+---
+
+# String types
+
+---
 
 ---
 
